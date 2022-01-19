@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>VL.NLog</RootNamespace>
+    <AssemblyName>VL.NLog</AssemblyName>
+    <Version>2.1.0</Version>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Configurations>Debug;Release;Debug_Log4Net;Release_Log4Net</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <OutputPath>..\lib</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Log4Net|AnyCPU'">
+    <DefineConstants>TRACE;USE_LOG4NET</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;USE_NLOG</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Log4Net|AnyCPU'">
+    <DefineConstants>TRACE;USE_LOG4NET</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <Choose><When Condition="$(DefineConstants.Contains('USE_NLOG'))">
+    <ItemGroup><PackageReference Include="NLog" Version="4.7.11" /></ItemGroup>
+    <ItemGroup><None Update="NLog.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None></ItemGroup>
+  </When></Choose>
+
+  <Choose><When Condition="$(DefineConstants.Contains('USE_LOG4NET'))">
+    <ItemGroup><PackageReference Include="log4net" Version="2.0.9" /></ItemGroup>
+	<ItemGroup><None Update="log4net.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></None></ItemGroup>
+  </When></Choose>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.7.13" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(SolutionDir)\NLog.config $(OutDir)" />
+  </Target>
+
+</Project>
